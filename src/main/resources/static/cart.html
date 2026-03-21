@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Apna Store</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .cart-page-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .cart-page-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cart-items-section {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .billing-section {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .billing-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .billing-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            color: #6b7280;
+        }
+
+        .billing-row.total {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--light-gray);
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--text-color);
+        }
+
+        .place-order-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 25px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .place-order-btn:hover {
+            background: var(--hover-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit;">
+                <h1>Apna Store</h1>
+                <p>min 10 mins delivery</p>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="back-link">← Continue Shopping</a>
+        </div>
+    </header>
+
+    <div class="cart-page-container">
+        <div class="cart-items-section">
+            <div class="cart-header">
+                <h2>Review Items</h2>
+                <span id="cart-count-badge">0 items</span>
+            </div>
+            <div id="cart-list" class="cart-items" style="display: block; position: static; box-shadow: none;">
+                <!-- Items will be rendered here -->
+                <div class="loading">Loading your cart...</div>
+            </div>
+        </div>
+
+        <div class="billing-section">
+            <h3 class="billing-title">Bill Details</h3>
+            <div class="billing-details">
+                <div class="billing-row">
+                    <span>Item Total</span>
+                    <span id="bill-subtotal">₹0</span>
+                </div>
+                <div class="billing-row">
+                    <span>Delivery Partner Fee</span>
+                    <span>₹25</span>
+                </div>
+                <div class="billing-row">
+                    <span>Handling Charge</span>
+                    <span>₹2</span>
+                </div>
+                <div class="billing-row total">
+                    <span>To Pay</span>
+                    <span id="bill-total">₹0</span>
+                </div>
+            </div>
+            <button class="place-order-btn" onclick="proceedToPayment()">Proceed to Pay</button>
+        </div>
+    </div>
+
+    <script>
+        // Inline cart logic for the separate page
+        window.proceedToPayment = function() {
+            const userMobile = localStorage.getItem('apnaStore_user');
+            if (!userMobile) {
+                alert('Please login first');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const cart = getCart();
+            const itemsArray = Object.values(cart);
+            if (itemsArray.length === 0) {
+                alert('Your cart is empty');
+                return;
+            }
+
+            let subtotal = 0;
+            itemsArray.forEach(item => {
+                subtotal += item.price * item.quantity;
+            });
+            const total = subtotal > 0 ? subtotal + 27 : 0;
+
+            // Redirect to payment page with amount
+            window.location.href = `payment.html?amount=${total}`;
+        };
+
+        function getCart() {
+            const cartData = localStorage.getItem('apnaStore_cart');
+            return cartData ? JSON.parse(cartData) : {};
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cartItemsContainer = document.getElementById('cart-list');
+            const subtotalEl = document.getElementById('bill-subtotal');
+            const totalEl = document.getElementById('bill-total');
+            const countEl = document.getElementById('cart-count-badge');
+
+            function updateAuthUI() {
+                const userMobile = localStorage.getItem('apnaStore_user');
+                const navLinks = document.querySelector('.nav-links');
+                if (userMobile) {
+                    navLinks.innerHTML = `
+                        <div class="user-profile">
+                            <span class="user-mobile">👤 ${userMobile}</span>
+                            <a href="#" onclick="logout()" class="logout-link">Logout</a>
+                        </div>
+                        <a href="index.html" class="back-link">← Continue Shopping</a>
+                    `;
+                }
+            }
+
+            window.logout = function() {
+                localStorage.removeItem('apnaStore_user');
+                window.location.reload();
+            }
+
+            updateAuthUI();
+
+            function saveCart(cart) {
+                localStorage.setItem('apnaStore_cart', JSON.stringify(cart));
+            }
+
+            function updateUI() {
+                const cart = getCart();
+                const itemsArray = Object.values(cart);
+                
+                let subtotal = 0;
+                let count = 0;
+
+                if (itemsArray.length === 0) {
+                    cartItemsContainer.innerHTML = '<div class="empty-cart-msg" style="padding: 50px;">Your cart is empty. <a href="index.html">Add some items!</a></div>';
+                } else {
+                    cartItemsContainer.innerHTML = itemsArray.map(item => {
+                        subtotal += item.price * item.quantity;
+                        count += item.quantity;
+                        return `
+                        <div class="cart-item">
+                            <img src="${item.imageUrl}" class="cart-item-img">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">₹${item.price}</div>
+                            </div>
+                            <div class="cart-item-actions">
+                                <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+                                <span class="cart-item-qty">${item.quantity}</span>
+                                <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+                            </div>
+                        </div>
+                    `}).join('');
+                }
+
+                subtotalEl.textContent = `₹${subtotal}`;
+                totalEl.textContent = `₹${subtotal > 0 ? subtotal + 27 : 0}`;
+                countEl.textContent = `${count} ${count === 1 ? 'item' : 'items'}`;
+            }
+
+            window.changeQty = function(id, delta) {
+                const cart = getCart();
+                if (cart[id]) {
+                    cart[id].quantity += delta;
+                    if (cart[id].quantity <= 0) {
+                        delete cart[id];
+                    }
+                    saveCart(cart);
+                    updateUI();
+                }
+            }
+
+            updateUI();
+        });
+    </script>
+</body>
+</html>

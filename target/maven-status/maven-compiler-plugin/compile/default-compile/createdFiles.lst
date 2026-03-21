@@ -1,0 +1,8 @@
+com\apnastore\repository\OrderRepository.class
+com\apnastore\controller\AuthController.class
+com\apnastore\model\Order.class
+com\apnastore\controller\ProductController.class
+com\apnastore\repository\ProductRepository.class
+com\apnastore\config\DataInitializer.class
+com\apnastore\model\Product.class
+com\apnastore\ApnaStoreApplication.class

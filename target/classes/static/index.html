@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apna Store - Groceries in minutes</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <h1>Apna Store</h1>
+            <p>min 10 mins delivery</p>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search for products, brands and more">
+            <button>Search</button>
+        </div>
+        <div class="nav-links">
+            <a href="login.html">Login</a>
+            <button class="cart-btn" id="cart-btn">
+                <span class="cart-icon">🛒</span>
+                <span id="cart-text">My Cart</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <aside class="sidebar">
+            <h3>Categories</h3>
+            <ul id="category-list">
+                <li class="active" data-category="All">All</li>
+                <li data-category="Dairy, Bread & Eggs">Dairy, Bread & Eggs</li>
+                <li data-category="Fruits & Vegetables">Fruits & Vegetables</li>
+                <li data-category="Cold Drinks & Juices">Cold Drinks & Juices</li>
+                <li data-category="Snacks & Munchies">Snacks & Munchies</li>
+                <li data-category="Breakfast & Instant Food">Breakfast & Instant Food</li>
+                <li data-category="Personal Care">Personal Care</li>
+                <li data-category="Home & Office">Home & Office</li>
+                <li data-category="Atta, Rice & Dal">Atta, Rice & Dal</li>
+                <li data-category="Cleaning Essentials">Cleaning Essentials</li>
+            </ul>
+        </aside>
+
+        <section class="products-section">
+            <div class="banner">
+                <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1920&h=400" alt="Fresh Groceries Banner">
+                <div class="banner-content">
+                    <h2>Fresh Groceries Delivered.</h2>
+                    <p>Get up to 30% off on your first order!</p>
+                </div>
+            </div>
+            
+            <h2 id="category-title">All Products</h2>
+            <div class="product-grid" id="product-grid">
+                <!-- Products will be loaded here dynamically -->
+                <div class="loading">Loading products...</div>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Update counter on page load/show
+        window.addEventListener('pageshow', () => {
+            if (window.updateCounter) window.updateCounter();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Apna Store</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 25px;
+            color: var(--text-color);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .login-btn:hover {
+            background: var(--hover-color);
+        }
+        .otp-group {
+            display: none;
+        }
+        #message {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .success { color: #059669; }
+        .error { color: #dc2626; }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit;">
+                <h1>Apna Store</h1>
+                <p>min 10 mins delivery</p>
+            </a>
+        </div>
+    </header>
+
+    <div class="login-container">
+        <h2 class="login-title">Sign in to Apna Store</h2>
+        
+        <div class="form-group" id="mobile-section">
+            <label for="mobile">Mobile Number</label>
+            <input type="text" id="mobile" class="form-input" placeholder="Enter 10 digit number" maxlength="10">
+            <button id="send-otp-btn" class="login-btn" style="margin-top: 15px;">Send OTP</button>
+        </div>
+
+        <div class="form-group otp-group" id="otp-section">
+            <label for="otp">Enter 6-digit OTP</label>
+            <input type="text" id="otp" class="form-input" placeholder="000000" maxlength="6">
+            <button id="verify-otp-btn" class="login-btn" style="margin-top: 15px;">Verify & Login</button>
+        </div>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mobileInput = document.getElementById('mobile');
+            const otpInput = document.getElementById('otp');
+            const sendBtn = document.getElementById('send-otp-btn');
+            const verifyBtn = document.getElementById('verify-otp-btn');
+            const mobileSection = document.getElementById('mobile-section');
+            const otpSection = document.getElementById('otp-section');
+            const messageEl = document.getElementById('message');
+
+            sendBtn.onclick = async () => {
+                const mobile = mobileInput.value;
+                if (!/^\d{10}$/.test(mobile)) {
+                    showMessage('Please enter a valid 10-digit number', 'error');
+                    return;
+                }
+
+                try {
+                    const res = await fetch('/api/auth/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mobile })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showMessage(data.message, 'success');
+                        mobileSection.style.display = 'none';
+                        otpSection.style.display = 'block';
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                } catch (err) {
+                    showMessage('Server error. Try again.', 'error');
+                }
+            };
+
+            verifyBtn.onclick = async () => {
+                const mobile = mobileInput.value;
+                const otp = otpInput.value;
+                if (!/^\d{6}$/.test(otp)) {
+                    showMessage('Enter 6-digit OTP', 'error');
+                    return;
+                }
+
+                try {
+                    const res = await fetch('/api/auth/verify-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mobile, otp })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        localStorage.setItem('apnaStore_user', mobile);
+                        showMessage('Login Successful! Redirecting...', 'success');
+                        setTimeout(() => window.location.href = 'index.html', 1500);
+                    } else {
+                        showMessage(data.message, 'error');
+                    }
+                } catch (err) {
+                    showMessage('Verification failed.', 'error');
+                }
+            };
+
+            function showMessage(msg, type) {
+                messageEl.textContent = msg;
+                messageEl.className = type;
+            }
+        });
+    </script>
+</body>
+</html>

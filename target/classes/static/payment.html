@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Apna Store</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .payment-container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 30px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .payment-header {
+            margin-bottom: 25px;
+        }
+
+        .payment-header h2 {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .amount-display {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0fdf4;
+            border-radius: 12px;
+            display: inline-block;
+            min-width: 200px;
+        }
+
+        .qr-section {
+            background: #f9fafb;
+            padding: 25px;
+            border-radius: 16px;
+            margin: 20px 0;
+            border: 2px dashed var(--light-gray);
+        }
+
+        .qr-code-img {
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 15px;
+            display: block;
+            border-radius: 8px;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .upi-id-box {
+            background: var(--white);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            font-family: monospace;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .instruction-text {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin: 20px 0;
+            line-height: 1.5;
+        }
+
+        .payment-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .confirm-btn:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .payment-methods-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            opacity: 0.6;
+        }
+
+        .success-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            margin-bottom: 20px;
+            animation: scaleUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <a href="index.html" style="text-decoration: none; color: inherit;">
+                <h1>Apna Store</h1>
+                <p>min 10 mins delivery</p>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="cart.html" style="text-decoration: none; color: var(--text-color);">← Back to Cart</a>
+        </div>
+    </header>
+
+    <div class="payment-container">
+        <div class="payment-header">
+            <h2>Complete Your Payment</h2>
+            <p>Scan the QR code to pay using any UPI app</p>
+        </div>
+
+        <div class="amount-display" id="display-total">₹0.00</div>
+
+        <div class="qr-section">
+            <img src="" id="qr-code" class="qr-code-img" alt="UPI QR Code">
+            <div class="upi-id-box">
+                <span id="upi-id-text">7320041630@fam</span>
+                <button class="copy-btn" onclick="copyUPI()">Copy</button>
+            </div>
+        </div>
+
+        <p class="instruction-text">
+            1. Open any UPI App (Google Pay, PhonePe, Paytm, etc.)<br>
+            2. Scan the QR code or enter the UPI ID manually<br>
+            3. Enter the exact amount and complete the payment
+        </p>
+
+        <div class="payment-actions">
+            <button class="confirm-btn" onclick="confirmPayment()">I've Paid Successfully</button>
+            <button class="cancel-btn" onclick="window.location.href='cart.html'">Cancel Payment</button>
+        </div>
+
+        <div class="payment-methods-icons">
+            <span>UPI • GPay • PhonePe • Paytm</span>
+        </div>
+    </div>
+
+    <div id="success-overlay" class="success-overlay">
+        <div class="success-checkmark">✓</div>
+        <h1 style="font-size: 2rem; margin-bottom: 10px;">Payment Successful!</h1>
+        <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 30px;">Your order has been placed.</p>
+        <p>Redirecting to order confirmation...</p>
+    </div>
+
+    <script>
+        const UPI_ID = "7320041630@fam";
+        const MERCHANT_NAME = "Apna Store";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const total = urlParams.get('amount') || '0';
+            
+            document.getElementById('display-total').textContent = `₹${parseFloat(total).toFixed(2)}`;
+            
+            // Generate QR Code
+            // Format: upi://pay?pa=UPI_ID&pn=NAME&am=AMOUNT&cu=INR
+            const upiUrl = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(MERCHANT_NAME)}&am=${total}&cu=INR`;
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiUrl)}`;
+            
+            document.getElementById('qr-code').src = qrApiUrl;
+        });
+
+        function copyUPI() {
+            navigator.clipboard.writeText(UPI_ID);
+            alert('UPI ID copied to clipboard!');
+        }
+
+        function confirmPayment() {
+            const overlay = document.getElementById('success-overlay');
+            overlay.style.display = 'flex';
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const total = urlParams.get('amount') || '0';
+            const orderId = 'AS' + Math.floor(Math.random() * 1000000);
+            
+            // Clear cart
+            localStorage.removeItem('apnaStore_cart');
+            
+            setTimeout(() => {
+                window.location.href = `order-success.html?orderId=${orderId}&amount=${total}`;
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
